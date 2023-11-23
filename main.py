@@ -1,16 +1,20 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,render_template
 import requests
 import os
+import werkzeug.utils
+import werkzeug.urls
+
 
 app = Flask(__name__)
 
 @app.route('/getweatherdetails', methods=['GET'])
+
 def get_weather():
     api_key = os.getenv('my_api_key')
     city = request.args.get('city')
 
     if not city:
-        return jsonify({'error': 'City parameter is required'}), 400
+        return jsonify({'error': 'cannot retrieve data without city input'}), 400
 
     base_url = 'http://api.weatherapi.com/v1/current.json'
     params = {'key': api_key, 'q': city}
@@ -20,16 +24,15 @@ def get_weather():
         data = response.json()
 
         if response.status_code == 200:
-            weather_info = {
-                'location': data['location'],
-                'condition': {
-                    'temp_c': data['current']['temp_c'],
-                    'feelslike_c': data['current']['feelslike_c'],
-                    'humidity': data['current']['humidity'],
-                    'wind_kph': data['current']['wind_kph']
+            output_data = {
+                'weather': {
+                    'cloud': data['current']['cloud'],
+                    'gust_kph': data['current']['gust_kph'],
+                    'last_updated': data['current']['last_updated'],
+                    'precip_mm': data['current']['precip_mm']
                 }
             }
-            return jsonify(data)
+            return jsonify(output_data)
         else:
             return jsonify({'error': data}), response.status_code
 
@@ -37,4 +40,4 @@ def get_weather():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5004)
