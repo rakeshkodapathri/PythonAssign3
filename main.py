@@ -1,9 +1,6 @@
 from flask import Flask, request, jsonify,render_template
 import requests
 import os
-import werkzeug.utils
-import werkzeug.urls
-
 
 app = Flask(__name__)
 
@@ -12,9 +9,6 @@ app = Flask(__name__)
 def get_weather():
     api_key = os.getenv('my_api_key')
     city = request.args.get('city')
-
-    if not city:
-        return jsonify({'error': 'cannot retrieve data without city input'}), 400
 
     base_url = 'http://api.weatherapi.com/v1/current.json'
     params = {'key': api_key, 'q': city}
@@ -40,4 +34,4 @@ def get_weather():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5004)
+    app.run(debug = True)
