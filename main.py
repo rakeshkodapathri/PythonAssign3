@@ -29,7 +29,7 @@ def get_weather():
                     'wind_kph': data['current']['wind_kph']
                 }
             }
-            return jsonify(weather_info)
+            return jsonify(data)
         else:
             return jsonify({'error': data}), response.status_code
 
